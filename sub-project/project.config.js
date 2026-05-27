@@ -7,6 +7,7 @@
  *   description: string, // 项目描述
  *   dist: string     // dist 目录路径
  *   entry: string,   // dist 下的入口页面路径（初始页），默认 dist/index.html，支持自定义入口页面（首页）或在 index.html 重定向到其他页面（参考 demo3）
+ *   install: string, // 安装依赖的命令
  *   build: string,   // 构建 dist 的命令（如果无需命令则不用设置，但得确保 dist 存在）
  * }>}
  */
@@ -18,6 +19,7 @@ module.exports = [
 		description: 'vite 单页面项目演示',
 		dist: 'sub-project/demo1/dist',
 		entry: 'index.html',
+		install: 'yarn install',
 		build: 'yarn build'
 	},
 	{
@@ -27,6 +29,7 @@ module.exports = [
 		description: 'vite 多页面项目演示（1）',
 		dist: 'sub-project/demo2/dist',
 		entry: 'index.html',
+		install: 'yarn install',
 		build: 'yarn build'
 	},
 	{
@@ -36,6 +39,7 @@ module.exports = [
 		description: '纯原生静态项目演示',
 		dist: 'sub-project/demo3/dist',
 		entry: 'pages/home.html',
+		install: 'yarn install',
 		build: 'node build'
 	}
 ]

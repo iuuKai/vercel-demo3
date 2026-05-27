@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+# 注意，由于 express 路由指向子项目 dist 目录，所以这里不能忽略 sub-project/**/dist 目录
 sub-project/**/dist
 dist-ssr
 *.local
@@ -23,5 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
 
 .vercel

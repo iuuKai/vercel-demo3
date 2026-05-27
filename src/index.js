@@ -3,6 +3,18 @@ const path = require('path')
 const fs = require('fs')
 const app = express()
 
+// 禁止 HTML 缓存
+app.use((req, res, next) => {
+	const ext = req.path.split('.').pop()
+	// 只有 HTML 不缓存
+	if (ext === 'html' || req.path === '/' || !ext) {
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+		res.setHeader('Pragma', 'no-cache')
+		res.setHeader('Expires', '0')
+	}
+	next()
+})
+
 // 主项目静态资源
 app.use('/static', express.static(path.join(__dirname, '../static')))
 

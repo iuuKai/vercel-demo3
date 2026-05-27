@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "node src/index.js",
 		"dev": "node src/index.js",
-		"build:all": "node scripts/build-all.js"
+		"build:all": "node scripts/build-all.js",
+		"install:all": "node scripts/install-all.js"
 	},
 	"dependencies": {
 		"express": "^5.2.1",

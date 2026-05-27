@@ -1,0 +1,1 @@
+import{t as e}from"../common-tbeebdoN.js";e(`.container`).append(`<div><h1>Home</h1><div class="gallery"><img src="/p/demo2/assets/jpg/demo-Bawk0iC5.jpg" width="200" height="200" alt="demo" /></div></div>`);

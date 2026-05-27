@@ -1,7 +1,7 @@
 {
 	"version": 2,
 	"buildCommand": "yarn build:all",
-	"installCommand": "yarn install",
+	"installCommand": "yarn install:all",
 	"builds": [
 		{ "src": "static/**/*", "use": "@vercel/static" },
 		{ "src": "sub-project/**/dist/**", "use": "@vercel/static" },
@@ -24,7 +24,7 @@
 			"dest": "/static/$1"
 		},
 		{
-			"src": "^/p/([^/]+)/(.*\\.(js|jsx|css|scss|png|jpg|jpeg|gif|svg|ico|webp|mp4|webm|ogg|mp3|wav|flac|aac|woff|woff2|ttf|otf|eot|json|pdf|txt|xml|map))$",
+			"src": "^/p/([^/]+)/(.*\\.\\w+)$",
 			"dest": "/sub-project/$1/dist/$2"
 		},
 		{
