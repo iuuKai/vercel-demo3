@@ -1,0 +1,15 @@
+{
+	"name": "vercel-demo",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"scripts": {
+		"start": "node src/index.js",
+		"dev": "node src/index.js",
+		"build:all": "node scripts/build-all.js"
+	},
+	"dependencies": {
+		"express": "^5.2.1",
+		"mockjs": "^1.1.0"
+	}
+}

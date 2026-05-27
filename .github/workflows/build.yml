@@ -1,0 +1,63 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install root and sub-project dependencies
+        run: |
+          yarn install
+          for dir in sub-project/*/; do
+            if [ -f "$dir/package.json" ]; then
+              echo "=== Installing $dir ==="
+              (cd "$dir" && yarn install)
+            fi
+          done
+
+      # 新增：清除所有子项目的旧 dist 目录
+      - name: Clean old dist directories
+        run: |
+          # 遍历 sub-project 下所有子项目的 dist 目录并删除
+          find ./sub-project -type d -path "*/dist" -exec rm -rf {} +
+          echo "✅ All old dist directories cleaned up"
+
+      - name: Build all projects
+        run: yarn build:all
+
+      - name: Configure Git
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and Push dist files
+        run: |
+          # 强制添加所有 dist 目录（包括子目录）
+          git add sub-project/**/dist/* -f
+          # 检查是否有实际的文件变更
+          if git diff --staged --quiet; then
+            echo "ℹ️ No changes to commit (dist files are up-to-date)"
+          else
+            git commit -m "构建: 自动打包子项目 [skip ci]"
+            git push
+            echo "✅ Dist files committed and pushed"
+          fi

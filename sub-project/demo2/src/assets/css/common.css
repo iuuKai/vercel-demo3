@@ -1,0 +1,19 @@
+#app {
+	height: 100vh;
+	background-color: #eacda3;
+	overflow: hidden;
+}
+
+.container {
+	margin: 20vh auto 0;
+	padding: 20px;
+	width: 400px;
+	background-color: #fff;
+	border-radius: 10px;
+}
+.nav-item {
+	line-height: 40px;
+}
+.nav button {
+	margin-right: 20px;
+}

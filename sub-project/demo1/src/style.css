@@ -1,0 +1,10 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#app {
+	height: 100vh;
+	background-color: #e0eafc;
+	overflow: hidden;
+}

@@ -1,0 +1,39 @@
+{
+	"version": 2,
+	"buildCommand": "yarn build:all",
+	"installCommand": "yarn install",
+	"builds": [
+		{ "src": "static/**/*", "use": "@vercel/static" },
+		{ "src": "sub-project/**/dist/**", "use": "@vercel/static" },
+		{
+			"src": "src/index.js",
+			"use": "@vercel/node",
+			"config": {
+				"includeFiles": [
+					"views/**",
+					"static/**",
+					"sub-project/**/dist/**",
+					"sub-project/project.config.js"
+				]
+			}
+		}
+	],
+	"routes": [
+		{
+			"src": "/static/(.*)",
+			"dest": "/static/$1"
+		},
+		{
+			"src": "^/p/([^/]+)/(.*\\.(js|jsx|css|scss|png|jpg|jpeg|gif|svg|ico|webp|mp4|webm|ogg|mp3|wav|flac|aac|woff|woff2|ttf|otf|eot|json|pdf|txt|xml|map))$",
+			"dest": "/sub-project/$1/dist/$2"
+		},
+		{
+			"src": "/api/(.*)",
+			"dest": "/src/index.js"
+		},
+		{
+			"src": "/(.*)",
+			"dest": "/src/index.js"
+		}
+	]
+}
