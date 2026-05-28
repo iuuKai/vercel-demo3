@@ -56,12 +56,21 @@ jobs:
         run: |
           git config --global user.name "Actions"
           git config --global user.email "actions@github.com"
-          git checkout --orphan vercel-dist
 
-          # 只保留 dist，删除所有源码
+          # ========== 判断分支是否存在 ==========
+          if git fetch origin vercel-dist; then
+            echo "✅ 分支存在，切换到 vercel-dist"
+            git checkout vercel-dist
+          else
+            echo "🆕 分支不存在，创建全新 vercel-dist"
+            git checkout --orphan vercel-dist
+          fi
+
+          # 清理所有内容，只保留本次构建的 dist
           rm -rf .github node_modules package*
           find . -type f ! -path "*/dist/*" -delete
 
+          # 提交并强制推送
           git add -f .
-          git commit -m "Deploy dist"
+          git commit -m "Deploy dist $(date +%Y-%m-%d)"
           git push -f origin vercel-dist
