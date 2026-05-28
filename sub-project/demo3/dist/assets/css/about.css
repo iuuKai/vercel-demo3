@@ -1,7 +1,0 @@
-.user-list {
-	max-height: 300px;
-	overflow-y: auto;
-}
-.user-list ul li {
-	line-height: 40px;
-}
