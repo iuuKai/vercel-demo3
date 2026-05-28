@@ -24,7 +24,8 @@ listenRouteChange(async route => {
 function initRoute(defaultPage) {
 	const search = new URLSearchParams(location.search)
 	const route = search.get('route') || defaultPage
-	changeRoute(route)
+	changeRoute(route, true)
+	// 触发路由change事件，触发路由监听
 	window.dispatchEvent(new Event('routechange'))
 }
 

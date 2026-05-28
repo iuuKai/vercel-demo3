@@ -29,10 +29,14 @@ function listenRouteChange(callback) {
 }
 
 // 修改 URL 不刷新
-function changeRoute(url) {
+function changeRoute(url, isInit = false) {
 	const u = new URL(location.href)
 	u.searchParams.set('route', url)
-	history.pushState({}, '', u)
+	if (isInit) {
+		history.replaceState({}, '', u)
+	} else {
+		history.pushState({}, '', u)
+	}
 }
 
 // 渲染页面 Promise 化（带错误处理）
