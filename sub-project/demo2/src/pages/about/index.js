@@ -4,7 +4,7 @@ import './index.css'
 
 const $container = $('.container')
 $container.append(
-	'<div><h1>About</h1><div class="user-list"><div class="loading">加载中...</div><div></div>'
+	'<div><h1>About</h1><div class="user-list"><div class="loading">加载中...</div></div></div>'
 )
 const isSubProject = window.isSubProject
 

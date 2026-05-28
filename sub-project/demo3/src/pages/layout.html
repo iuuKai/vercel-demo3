@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>demo3</title>
+		<link rel="stylesheet" href="/assets/css/index.css" />
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
+		<script src="/assets/js/function.js" defer></script>
+		<script src="/assets/js/index.js" defer></script>
+		<script src="/assets/js/home.js" defer></script>
+		<script src="/assets/js/about.js" defer></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="container">
+				<div class="sup-nav">
+					<a href="/">返回导航</a>
+				</div>
+				<div class="nav">
+					<ul>
+						<li class="nav-item">
+							<button class="nav-btn" data-router data-url="/pages/home.html">to Home</button>
+							<span>加载图片资源</span>
+						</li>
+						<li class="nav-item">
+							<button class="nav-btn" data-router data-url="/pages/about.html">to About</button>
+							<span>请求主项目接口</span>
+						</li>
+						<li class="nav-item">
+							<button class="nav-btn" data-url="/404.html">to 404</button>
+							<span>404错误页</span>
+						</li>
+					</ul>
+				</div>
+				<div id="box"></div>
+			</div>
+		</div>
+	</body>
+</html>

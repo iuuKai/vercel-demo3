@@ -34,17 +34,30 @@ config.forEach(proj => {
 	// 关键：路径必须正确
 	const cwd = path.resolve(__dirname, '../sub-project', proj.name)
 
-	// 先安装子项目依赖
-	console.log(`📦 安装 ${proj.name} 依赖...`)
-	const installCmd = proj.install || 'yarn install'
-	try {
-		execSync(installCmd, {
-			stdio: 'inherit',
-			cwd
-		})
-		console.log(`✅ ${proj.name} 依赖安装完成`)
-	} catch (e) {
-		console.log(`⚠️ ${proj.name} 依赖安装失败，但继续构建`)
+	// 检查是否已经安装过依赖
+	const nodeModulesPath = path.join(cwd, 'node_modules')
+	const hasNodeModules = fs.existsSync(nodeModulesPath)
+
+	// 也可以检查是否有其他标识文件，比如 .yarnrc 或 package-lock.json
+	const yarnLockPath = path.join(cwd, 'yarn.lock')
+	const packageLockPath = path.join(cwd, 'package-lock.json')
+	const hasLockFile = fs.existsSync(yarnLockPath) || fs.existsSync(packageLockPath)
+
+	if (hasNodeModules && hasLockFile) {
+		console.log(`✅ ${proj.name} 依赖已存在，跳过安装`)
+	} else {
+		// 先安装子项目依赖
+		console.log(`📦 安装 ${proj.name} 依赖...`)
+		const installCmd = proj.install || 'yarn install'
+		try {
+			execSync(installCmd, {
+				stdio: 'inherit',
+				cwd
+			})
+			console.log(`✅ ${proj.name} 依赖安装完成`)
+		} catch (e) {
+			console.log(`⚠️ ${proj.name} 依赖安装失败，但继续构建`)
+		}
 	}
 
 	// 执行子项目构建命令

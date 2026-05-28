@@ -32,19 +32,6 @@ export default defineConfig(({ command, mode }) => {
 		},
 		plugins: [
 			isBuild && htmlBasePathPlugin(baseURL, ignoreSingleSlash),
-			/**
-			 * vite 打包时只会处理 js 里的资源加载，不会处理 html 里的资源加载，所以需要使用插件来处理 html 里的资源加载
-			 *
-			 * 将 html 文件里引入的 assets 资源打包时复制到 dist/assets 目录
-			 * 		=> <link rel="stylesheet" href="/assets/css/reset.css">
-			 * 		原路径：src/assets/css/reset.css >> 打包后路径：dist/assets/css/reset.css（不处理则不会被打包到dist）
-			 *
-			 * 或将 html 需要引入静态资源，放在 public 下，则无需使用插件复制处理
-			 * 		=> <link rel="stylesheet" href="/reset.css">
-			 * 		原路径：public/reset.css >> 打包后路径：dist/reset.css（无需处理会自动打包到dist）
-			 *
-			 * 也包含 meta refresh 中的路径
-			 */
 			isBuild &&
 				copyAssetsPlugin(
 					path.resolve(__dirname, 'src/assets'),

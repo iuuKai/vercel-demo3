@@ -1,0 +1,1 @@
+import{i as e,o as t,r as n,t as r}from"./index-CMQcx6nq.js";var i={};function a(r,i){return t(),e(`div`,null,[...i[0]||=[n(`h1`,null,`Home`,-1),n(`div`,null,[n(`img`,{src:`/p/demo1/assets/demo-Bawk0iC5.jpg`,width:`200`,height:`200`,alt:`demo`})],-1)]])}var o=r(i,[[`render`,a],[`__scopeId`,`data-v-80427e02`]]);export{o as default};

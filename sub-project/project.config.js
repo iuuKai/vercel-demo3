@@ -26,7 +26,7 @@ module.exports = [
 		name: 'demo2',
 		route: '/p/demo2',
 		type: 'mpa',
-		description: 'vite 多页面项目演示（1）',
+		description: 'vite 多页面项目演示',
 		dist: 'sub-project/demo2/dist',
 		entry: 'index.html',
 		install: 'yarn install',
@@ -38,7 +38,7 @@ module.exports = [
 		type: 'static',
 		description: '纯原生静态项目演示',
 		dist: 'sub-project/demo3/dist',
-		entry: 'pages/home.html',
+		entry: 'pages/layout.html',
 		install: 'yarn install',
 		build: 'node build'
 	}
