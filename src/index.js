@@ -35,13 +35,25 @@ projects.forEach(item => {
 
 	// 根路径入口
 	app.get(route, (req, res) => {
-		res.sendFile(path.join(distPath, entryFile))
+		res.sendFile(path.join(distPath, entryFile), {
+			headers: {
+				'Cache-Control': 'no-cache, no-store, must-revalidate',
+				Pragma: 'no-cache',
+				Expires: '0'
+			}
+		})
 	})
 
 	// SPA 子路径处理
 	if (type === 'spa') {
 		app.get(new RegExp(`^${route}/.+$`), (req, res) => {
-			res.sendFile(path.join(distPath, entryFile))
+			res.sendFile(path.join(distPath, entryFile), {
+				headers: {
+					'Cache-Control': 'no-cache, no-store, must-revalidate',
+					Pragma: 'no-cache',
+					Expires: '0'
+				}
+			})
 		})
 	}
 })
@@ -77,7 +89,13 @@ app.use((req, res) => {
 	// 尝试返回 404.html，如果不存在则返回文本
 	const notFoundPath = path.join(__dirname, '../public', '404.html')
 	if (fs.existsSync(notFoundPath)) {
-		res.sendFile(notFoundPath)
+		res.sendFile(notFoundPath, {
+			headers: {
+				'Cache-Control': 'no-cache, no-store, must-revalidate',
+				Pragma: 'no-cache',
+				Expires: '0'
+			}
+		})
 	} else {
 		res.send('404 - 请配置 404 页面')
 	}
