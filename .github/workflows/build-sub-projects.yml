@@ -15,13 +15,25 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Find changed projects
         id: changed
         run: |
           CHANGED=$(git diff --dirstat=files,0 HEAD^ HEAD | grep -oP 'sub-project/\w+' | sort | uniq)
-          echo "dirs=$CHANGED" >> $GITHUB_OUTPUT
+          if [ -z "$CHANGED" ]; then
+            echo "has_changed=false" >> $GITHUB_OUTPUT
+            echo "dirs=" >> $GITHUB_OUTPUT
+          else
+            echo "has_changed=true" >> $GITHUB_OUTPUT
+            echo "dirs=$CHANGED" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip if no changes
+        if: steps.changed.outputs.has_changed == 'false'
+        run: |
+          echo "🛑 No sub-project changed, skip build and deploy."
+          exit 0
 
       - name: Build only changed projects (from project.config.js)
         run: |
@@ -30,7 +42,6 @@ jobs:
             const path = require('path');
             const { execSync } = require('child_process');
 
-            // 读取你的配置
             const projects = require('./sub-project/project.config.js');
             const changedDirs = process.argv.slice(2);
 
@@ -57,20 +68,22 @@ jobs:
           git config --global user.name "Actions"
           git config --global user.email "actions@github.com"
 
-          # ========== 判断分支是否存在 ==========
+          mkdir -p /tmp/dist-cache
+          cp -r sub-project/*/dist /tmp/dist-cache/ 2>/dev/null || true
+
           if git fetch origin vercel-dist; then
-            echo "✅ 分支存在，切换到 vercel-dist"
             git checkout vercel-dist
+            git pull origin vercel-dist
           else
-            echo "🆕 分支不存在，创建全新 vercel-dist"
             git checkout --orphan vercel-dist
           fi
 
-          # 清理所有内容，只保留本次构建的 dist
-          rm -rf .github node_modules package*
-          find . -type f ! -path "*/dist/*" -delete
+          git rm -rf .
+          rm -rf .github node_modules package* || true
 
-          # 提交并强制推送
+          mkdir -p sub-project
+          cp -r /tmp/dist-cache/* ./sub-project/ 2>/dev/null || true
+
           git add -f .
           git commit -m "Deploy dist $(date +%Y-%m-%d)"
           git push -f origin vercel-dist
