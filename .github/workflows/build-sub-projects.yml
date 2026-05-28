@@ -1,0 +1,67 @@
+name: Build changed sub projects
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Find changed projects
+        id: changed
+        run: |
+          CHANGED=$(git diff --dirstat=files,0 HEAD^ HEAD | grep -oP 'sub-project/\w+' | sort | uniq)
+          echo "dirs=$CHANGED" >> $GITHUB_OUTPUT
+
+      - name: Build only changed projects (from project.config.js)
+        run: |
+          cat > build-changed.js << 'EOF'
+            const fs = require('fs');
+            const path = require('path');
+            const { execSync } = require('child_process');
+
+            // 读取你的配置
+            const projects = require('./sub-project/project.config.js');
+            const changedDirs = process.argv.slice(2);
+
+            changedDirs.forEach(dir => {
+              const name = path.basename(dir);
+              const proj = projects.find(p => p.name === name);
+              if (!proj) return;
+
+              console.log('\n==================================');
+              console.log('打包:', name, '命令:', proj.build);
+              console.log('==================================');
+
+              execSync(proj.build, {
+                cwd: dir,
+                stdio: 'inherit'
+              });
+            });
+          EOF
+
+          node build-changed.js ${{ steps.changed.outputs.dirs }}
+
+      - name: Push dist to vercel-dist
+        run: |
+          git config --global user.name "Actions"
+          git config --global user.email "actions@github.com"
+          git checkout --orphan vercel-dist
+
+          # 只保留 dist，删除所有源码
+          rm -rf .github node_modules package*
+          find . -type f ! -path "*/dist/*" -delete
+
+          git add -f .
+          git commit -m "Deploy dist"
+          git push -f origin vercel-dist
