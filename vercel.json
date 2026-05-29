@@ -1,21 +1,11 @@
 {
 	"version": 2,
-	"buildCommand": "yarn build:all",
-	"installCommand": "yarn install:all",
 	"builds": [
 		{ "src": "static/**/*", "use": "@vercel/static" },
-		{ "src": "sub-project/**/dist/**", "use": "@vercel/static" },
+		{ "src": "sub-project/**/dist/**/*", "use": "@vercel/static" },
 		{
 			"src": "src/index.js",
-			"use": "@vercel/node",
-			"config": {
-				"includeFiles": [
-					"views/**",
-					"static/**",
-					"sub-project/**/dist/**",
-					"sub-project/project.config.js"
-				]
-			}
+			"use": "@vercel/node"
 		}
 	],
 	"routes": [
@@ -35,5 +25,11 @@
 			"src": "/(.*)",
 			"dest": "/src/index.js"
 		}
-	]
+	],
+	"functions": {
+		"src/index.js": {
+			"includeFiles": "**",
+			"runtime": "nodejs20.x"
+		}
+	}
 }
