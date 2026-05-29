@@ -68,27 +68,33 @@ jobs:
 
           node build-changed.js ${{ steps.changed.outputs.dirs }}
 
-      - name: Push dist to vercel-dist
+      - name: Push dist to vercel-dist (修复目录层级)
         run: |
           git config --global user.name "Actions"
           git config --global user.email "actions@github.com"
 
-          mkdir -p /tmp/dist-cache
-          cp -r sub-project/*/dist /tmp/dist-cache/ 2>/dev/null || true
+          # 1. 先创建临时目录，完整保留 sub-project/xxx/dist 结构
+          mkdir -p /tmp/dist-cache/sub-project
+          cp -r sub-project/*/dist /tmp/dist-cache/sub-project/ 2>/dev/null || true
 
+          # 2. 处理 vercel-dist 分支
           if git fetch origin vercel-dist; then
+            echo "✅ 分支存在，切换到 vercel-dist"
             git checkout vercel-dist
             git pull origin vercel-dist
           else
+            echo "🆕 分支不存在，创建全新 vercel-dist"
             git checkout --orphan vercel-dist
           fi
 
+          # 3. 清理当前分支所有文件（保留 .git！）
           git rm -rf .
-          rm -rf .github node_modules package* || true
+          rm -rf .github node_modules package* build-changed.js || true
 
-          mkdir -p sub-project
-          cp -r /tmp/dist-cache/* ./sub-project/ 2>/dev/null || true
+          # 4. 把缓存的 dist 完整复制回来，保留 sub-project 层级
+          cp -r /tmp/dist-cache/* . 2>/dev/null || true
 
+          # 5. 提交并推送
           git add -f .
           git commit -m "Deploy dist $(date +%Y-%m-%d)"
           git push -f origin vercel-dist
