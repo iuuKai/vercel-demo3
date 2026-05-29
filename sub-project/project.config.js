@@ -39,7 +39,6 @@ module.exports = [
 		description: '纯原生静态项目演示',
 		dist: 'sub-project/demo3/dist',
 		entry: 'pages/layout.html',
-		install: 'yarn install',
 		build: 'node build'
 	}
 ]

@@ -21,26 +21,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: 'yarn'
 
-      - name: Find changed projects
-        id: changed
-        run: |
-          CHANGED=$(git diff --dirstat=files,0 HEAD^ HEAD | grep -oP 'sub-project/\w+' | sort | uniq)
-          if [ -z "$CHANGED" ]; then
-            echo "has_changed=false" >> $GITHUB_OUTPUT
-            echo "dirs=" >> $GITHUB_OUTPUT
-          else
-            echo "has_changed=true" >> $GITHUB_OUTPUT
-            echo "dirs=$CHANGED" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Skip if no changes
-        if: steps.changed.outputs.has_changed == 'false'
-        run: |
-          echo "🛑 No sub-project changed, skip build and deploy."
-          exit 0
-
-      - name: Build only changed projects (from project.config.js)
+      - name: Build only changed projects (config driven)
         run: |
           cat > build-changed.js << 'EOF'
             const fs = require('fs');
@@ -56,19 +39,42 @@ jobs:
               if (!proj) return;
 
               console.log('\n==================================');
-              console.log('打包:', name, '命令:', proj.build);
+              console.log('处理项目:', name);
               console.log('==================================');
 
-              execSync(proj.build, {
-                cwd: dir,
-                stdio: 'inherit'
-              });
+              try {
+                // 1. 有 install 指令 → 安装
+                if (proj.install && typeof proj.install === 'string') {
+                  console.log('📦 安装:', proj.install);
+                  execSync(proj.install, {
+                    cwd: dir,
+                    stdio: 'inherit'
+                  });
+                } else {
+                  console.log('✅ 无需 install，跳过');
+                }
+
+                // 2. 有 build 指令 → 打包
+                if (proj.build && typeof proj.build === 'string') {
+                  console.log('🔨 打包:', proj.build);
+                  execSync(proj.build, {
+                    cwd: dir,
+                    stdio: 'inherit'
+                  });
+                } else {
+                  console.log('✅ 无需 build，跳过');
+                }
+
+              } catch (err) {
+                console.error('❌ 项目执行失败:', name);
+                process.exit(1);
+              }
             });
           EOF
 
           node build-changed.js ${{ steps.changed.outputs.dirs }}
 
-      - name: Clean up temp files (fix checkout conflict)
+      - name: Clean up temp files
         run: |
           rm -f build-changed.js
 
