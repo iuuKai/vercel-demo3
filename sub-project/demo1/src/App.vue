@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<div v-if="isSubProject" class="sup-nav">
-			<a href="/">返回导航test</a>
+			<a href="/">返回导航test1</a>
 		</div>
 		<div class="nav">
 			<ul>
