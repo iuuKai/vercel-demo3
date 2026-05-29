@@ -70,9 +70,9 @@ jobs:
 
       - name: Clean up temp files (fix checkout conflict)
         run: |
-          rm -f build-changed.js  # 删除临时 JS 文件，避免切换分支报错
+          rm -f build-changed.js
 
-      - name: Push dist to vercel-dist (clean rebuild)
+      - name: Push dist to vercel-dist (clean rebuild with empty commit check)
         run: |
           git config --global user.name "Actions"
           git config --global user.email "actions@github.com"
@@ -91,7 +91,11 @@ jobs:
           # 4. 恢复正确的 sub-project/xxx/dist 结构
           cp -r /tmp/dist-cache/* . 2>/dev/null || true
 
-          # 5. 提交并推送
-          git add -f .
-          git commit -m "Rebuild vercel-dist with correct structure $(date +%Y-%m-%d)"
-          git push -f origin vercel-dist
+          # 5. 检查是否有文件变更，避免空提交
+          if git status --porcelain | grep -q .; then
+            git add -f .
+            git commit -m "Rebuild vercel-dist with correct structure $(date +%Y-%m-%d)"
+            git push -f origin vercel-dist
+          else
+            echo "✅ No new files to commit, skip push."
+          fi
